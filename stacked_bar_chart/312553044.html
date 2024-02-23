@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<title>stacked bar chart</title>
+<style>
+
+.axis .domain {
+  display: none;
+}
+
+</style>
+<svg width="100000" height="600"></svg>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<div>
+      <content id="content"></content>
+<!--       sepal length,sepal width,petal length,petal width,class -->
+      <span id="dropdown_span">
+        Sorting-Choices:
+        <select id="Sorting-Choices" name="Sorting-Choices">
+          	<option selected="selected" value="total">total</option>
+            <option value="scores_teaching">scores_teaching</option>
+            <option value="scores_research">scores_research</option>
+            <option value="scores_citations">scores_citations</option>
+            <option value="scores_industry_income">scores_industry_income</option>
+            <option value="scores_international_outlook">scores_international_outlook</option>
+        </select>
+        Ascending or Descending
+        <select id="Ascend_Dscend" name="Ascend_Dscend">
+          <option selected="selected" value="Ascending">Ascending</option>
+          <option value="Descending">Descending</option>
+        </select>
+        
+      </span>
+</div>
+<script>
+d3.select("#Sorting-Choices").on("change", rerender);
+d3.select("#Ascend_Dscend").on("change", rerender);
+
+var svg = d3.select("svg"),
+    margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = +svg.attr("width") - margin.left - margin.right,
+    height = +svg.attr("height") - margin.top - margin.bottom,
+    g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+console.log(width)
+
+var x = d3.scaleBand()
+    .rangeRound([0, width])
+    .paddingInner(0.05)
+    .align(0.1);
+
+var y = d3.scaleLinear()
+    .rangeRound([height, 0]);
+
+var z = d3.scaleOrdinal()
+    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+
+var xAxis = d3.axisBottom(x)
+
+function rerender() {
+  d3.csv("http://vis.lab.djosix.com:2023/data/TIMES_WorldUniversityRankings_2024.csv", function(d, i, columns) {
+    return {
+      "name": d["name"],
+      "scores_teaching": +d["scores_teaching"]*0.295,
+      "scores_research": +d["scores_research"]*0.29,
+      "scores_citations": +d["scores_citations"]*0.3,
+      "scores_industry_income": +d["scores_industry_income"]*0.04,
+      "scores_international_outlook": +d["scores_international_outlook"]*0.075,
+      "total": (+d["scores_teaching"]*0.295 + +d["scores_research"]*0.29 + +d["scores_citations"]*0.3 + +d["scores_industry_income"]*0.04 + +d["scores_international_outlook"]*0.075)
+      // "total": (+d["scores_teaching"] + +d["scores_research"] + +d["scores_citations"] + +d["scores_industry_income"] + +d["scores_international_outlook"])
+    };
+  }, function(error, data) {
+    if (error) throw error;
+    console.log(data[0]);
+    console.log("Data size:", data.length);
+    // data = data.filter(d => !isNaN(d["scores_teaching"]));
+    console.log(data.length)
+    data = data.slice(0, 1904);
+
+
+    var keys = ["name","scores_teaching","scores_research","scores_citations","scores_industry_income","scores_international_outlook"];
+    var categories = ["scores_teaching","scores_research","scores_citations","scores_industry_income","scores_international_outlook"];
+
+    // 根據選擇框的值來決定排序方式
+    var sortKey = d3.select("#Sorting-Choices").property("value");
+    var ascend_descend = d3.select("#Ascend_Dscend").property("value");
+    if(ascend_descend === "Ascending"){
+      data.sort((a, b) => d3.ascending(a[sortKey], b[sortKey]));
+    }
+    else if(ascend_descend === "Descending"){
+    	data.sort((a, b) => d3.descending(a[sortKey], b[sortKey]));
+    }
+
+    x.domain(data.map(function(d) { return d.name; }));
+    y.domain([0, d3.max(data, function(d) { return d.total; })]).nice();
+    console.log([0, d3.max(data, function(d) { return d.total; })])
+    z.domain(keys);
+
+    g.selectAll("*").remove();
+		
+    // 計算每個條形的寬度
+    var barWidth = x.bandwidth();
+    console.log(barWidth)
+
+    g.append("g")
+      .selectAll("g")
+      .data(d3.stack().keys(categories)(data))
+      .enter().append("g")
+      .classed("bar-group", true)
+      .attr("fill", function(d) { return z(d.key); })
+      .selectAll("rect")
+      .data(function(d) { return d; }, d => d.data.name)
+      .enter().append("rect")
+      .classed("bar", true)
+      .attr("x", function(d) { return x(d.data.name); }) // 使用 x.bandwidth() 進行調整
+      .attr("y", function(d) { if( isNaN(y(d[1]))){ console.log(d);} return y(d[1]); })
+      .attr("height", function(d) {
+        return (y(d[0]) - y(d[1]) > 0) ? y(d[0]) - y(d[1]) : 0;
+      })
+      .attr("width", barWidth); // 直接使用 x.bandwidth()
+
+    g.append("g")
+      .attr("class", "axis x")
+      // .attr("transform", "translate(0," + height + ")")
+      .attr("transform", "translate(0,500)")
+      .call(xAxis)
+      .selectAll("text")
+    	.attr("dy", "-.5em")
+    	.style("font-size", "14px")
+      .attr("transform", "rotate(90)") // 旋轉文字;
+      .style("text-anchor", "end")
+    	.style("width", 30);
+
+    g.append("g")
+      .attr("class", "axis y")
+      .call(d3.axisLeft(y).ticks(null, "s"))
+      .append("text")
+      .attr("x", 2)
+      .attr("y", y(y.ticks().pop()) + 0.5)
+      .attr("dy", "0.32em")
+      .attr("fill", "#000")
+      .attr("font-weight", "bold")
+      .attr("text-anchor", "start")
+      .text("Score");
+
+    var legend = g.append("g")
+      .attr("font-family", "sans-serif")
+      .attr("font-size", 10)
+      .attr("text-anchor", "end")
+      .selectAll("g")
+      .data(keys.slice().reverse())
+      .enter().append("g")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+    legend.append("rect")
+      .attr("x", width - 19)
+      .attr("width", 19)
+      .attr("height", 19)
+      .attr("fill", z);
+
+    legend.append("text")
+      .attr("x", width - 24)
+      .attr("y", 9.5)
+      .attr("dy", "0.32em")
+      .text(function(d) { return d; });
+  });
+}
+rerender();
+</script>
