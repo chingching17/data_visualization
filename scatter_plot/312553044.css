@@ -1,0 +1,44 @@
+body {
+  font-size: 2em;
+  margin: 0px;
+/*   overflow: hidden; */
+}
+circle{
+	fill: tomato;
+  opacity: 0.5;
+}
+.Iris-setosa {
+	fill : orange;
+  opacity: 0.5;
+}
+
+.Iris-versicolor {
+	fill : red;
+  opacity: 0.5;
+}
+
+.Iris-virginica {
+	fill : blue;
+  opacity: 0.5;
+}
+.legend-text{
+  font-size: 0.7em;
+}
+.dropdown-text{
+	font-size: 1em;
+}
+select{
+	font-size: 1em;
+}
+text {
+  font-size: 1.5em;
+}
+
+.tick line {
+  color: #8E9993;
+}
+
+.axis-label {
+  font-size: 3em;
+}
+

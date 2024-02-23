@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>hw1_scatter_plot</title>
+    <link rel="stylesheet" href="312553044.css">
+    <script src="https://unpkg.com/d3@5.6.0/dist/d3.min.js"></script>
+  </head>
+  <body>
+    <div>
+      <content id="content"></content>
+      <span id="dropdown_span" style="text-align:center;">
+        x-axis:
+        <select id="x-axis" name="x-axis">
+          <option selected="selected" value="sepal length">sepal length</option>
+          <option value="sepal width">sepal width</option>
+          <option value="petal length">petal length</option>
+          <option value="petal width">petal width</option>
+        </select>
+        y-axis:
+        <select id="y-axis" name="y-axis" onChange='./'>
+          <option selected="selected" value="sepal length">sepal length</option>
+          <option value="sepal width">sepal width</option>
+          <option value="petal length">petal length</option>
+          <option value="petal width">petal width</option>
+        </select>
+      </span>
+      <span>
+      	<svg width="650" height="500"></svg>
+        <svg id="legend" width = "200" height="400"></svg>
+      <span>
+      <script src="312553044.js">
+      </script>
+          
+          
+    </div>
+  </body>
+</html>
