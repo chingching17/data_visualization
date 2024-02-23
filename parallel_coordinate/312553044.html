@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Iris visualize parallel coordinates</title>
+    <link rel="stylesheet" type="text/css">
+ <script src="https://unpkg.com/d3@5.9.2/dist/d3.min.js"></script>
+    
+  </head>
+  <body>
+    <div>
+      <content id="content"></content>
+<!--       sepal length,sepal width,petal length,petal width,class -->
+      <span id="dropdown_span">
+        first-axis:
+        <select id="first-axis" name="first-axis">
+          	<option selected="selected" value="sepal length">sepal length</option>
+            <option value="sepal width">sepal width</option>
+            <option value="petal length">petal length</option>
+            <option value="petal width">petal width</option>
+        </select>
+        second-axis:
+        <select id="second-axis" name="second-axis" onChange='./'>
+          	<option value="sepal length">sepal length</option>
+            <option selected="selected" value="sepal width">sepal width</option>
+            <option value="petal length">petal length</option>
+            <option value="petal width">petal width</option>
+        </select>
+        <br>
+        third-axis:
+        <select id="third-axis" name="third-axis" onChange='./'>
+          	<option value="sepal length">sepal length</option>
+            <option value="sepal width">sepal width</option>
+            <option selected="selected" value="petal length">petal length</option>
+            <option value="petal width">petal width</option>
+        </select>
+        forth-axis:
+        <select id="forth-axis" name="forth-axis" onChange='./'>
+          	<option value="sepal length">sepal length</option>
+            <option value="sepal width">sepal width</option>
+            <option value="petal length">petal length</option>
+            <option selected="selected" value="petal width">petal width</option>
+        </select>
+      </span>
+      <span>
+      	<svg width="600" height="500"></svg>
+        <svg id="legend" width = "150" height="450"></svg>
+      <span>
+      <script src="312553044.js">
+      </script>
+    </div>
+  </body>
+</html>
